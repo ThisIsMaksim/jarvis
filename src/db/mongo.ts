@@ -6,7 +6,7 @@ const logger = createChildLogger('mongodb');
 
 export async function connectToMongoDB(): Promise<void> {
   try {
-    await mongoose.connect(config.MONGO_URI);
+    await mongoose.connect(config.MONGODB_URI);
     logger.info('✅ Connected to MongoDB');
     
     mongoose.connection.on('error', (error) => {

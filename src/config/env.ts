@@ -8,7 +8,7 @@ const envSchema = z.object({
   TELEGRAM_BOT_TOKEN: z.string().min(1, 'Telegram bot token is required'),
   
   // Database Configuration
-  MONGO_URI: z.string().url('Invalid MongoDB URI'),
+  MONGODB_URI: z.string().url('Invalid MongoDB URI'),
   
   // Redis Configuration
   REDIS_URL: z.string().url('Invalid Redis URL'),
