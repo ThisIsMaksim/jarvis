@@ -1,4 +1,4 @@
-import { Queue, Worker, QueueOptions, WorkerOptions } from 'bullmq';
+import { Queue, QueueOptions, WorkerOptions } from 'bullmq';
 import IORedis from 'ioredis';
 import { config } from '../config/env.js';
 import { createChildLogger } from '../config/logger.js';
@@ -8,7 +8,6 @@ const logger = createChildLogger('queue');
 // Redis connection
 export const redis = new IORedis(config.REDIS_URL, {
   maxRetriesPerRequest: 3,
-  retryDelayOnFailover: 100,
   enableReadyCheck: false,
   lazyConnect: true,
 });
@@ -43,8 +42,8 @@ const defaultQueueOptions: QueueOptions = {
 const defaultWorkerOptions: WorkerOptions = {
   connection: redis,
   concurrency: 5,
-  removeOnComplete: 100,
-  removeOnFail: 50,
+  removeOnComplete: { count: 100 },
+  removeOnFail: { count: 50 },
 };
 
 // Queues

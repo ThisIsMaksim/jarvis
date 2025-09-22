@@ -147,7 +147,7 @@ async function appendNote(
   return {
     success: true,
     result: {
-      noteId: noteMessage._id.toString(),
+      noteId: (noteMessage as any)._id.toString(),
       text: validatedArgs.text,
       tags: validatedArgs.tags,
       message: `📝 **Заметка сохранена**\n\n${validatedArgs.text}${validatedArgs.tags ? `\n\n🏷️ Теги: ${validatedArgs.tags.join(', ')}` : ''}`,
@@ -180,7 +180,7 @@ async function getContextWindow(args: any): Promise<ToolExecutionResult> {
   messages.reverse();
   
   const contextMessages = messages.map(msg => ({
-    id: msg._id.toString(),
+    id: (msg as any)._id.toString(),
     role: msg.role,
     content: msg.content,
     createdAt: msg.createdAt,

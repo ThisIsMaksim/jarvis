@@ -1,11 +1,10 @@
 import { BotContext } from '../bot.js';
-import { createChildLogger } from '../../config/logger.js';
 import { Chat } from '../../db/models/Chat.js';
 import { Topic } from '../../db/models/Topic.js';
 import { Reminder } from '../../db/models/Reminder.js';
 import { Summary } from '../../db/models/Summary.js';
 
-const logger = createChildLogger('commands');
+// const logger = createChildLogger('commands');
 
 export async function handleStart(ctx: BotContext) {
   const chatType = ctx.chat?.type;

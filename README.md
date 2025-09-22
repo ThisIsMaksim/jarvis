@@ -437,3 +437,12 @@ MIT License
 ## 🤝 Поддержка
 
 Для вопросов и предложений создавайте Issues в репозитории.
+
+
+# Скачайте проект
+git clone https://github.com/ThisIsMaksim/jarvis.git /opt/telegram-ai-bot
+cd /opt/telegram-ai-bot
+
+# Запустите автоматическую настройку сервера
+chmod +x deploy/setup-server.sh
+bash deploy/setup-server.sh

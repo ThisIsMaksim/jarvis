@@ -27,7 +27,7 @@ export async function handleText(ctx: BotContext) {
   }
 }
 
-async function handlePrivateMessage(ctx: BotContext, text: string) {
+async function handlePrivateMessage(ctx: BotContext, _text: string) {
   // In private chat, always suggest adding to group
   await ctx.reply(
     '💡 **Добавьте меня в групповой чат с топиками**\n\n' +
@@ -190,7 +190,7 @@ async function processTopicMessage(ctx: BotContext, text: string) {
   }
 }
 
-async function handleSpecialCommands(ctx: BotContext, text: string, topic: any): Promise<boolean> {
+async function handleSpecialCommands(ctx: BotContext, text: string, _topic: any): Promise<boolean> {
   const lowerText = text.toLowerCase();
   
   // Check for reminder patterns

@@ -3,6 +3,7 @@ import { defaultWorkerOptions } from '../queue.js';
 import { createChildLogger } from '../../config/logger.js';
 import { Reminder } from '../../db/models/Reminder.js';
 import { Bot } from 'grammy';
+import { BotContext } from '../../bot/bot.js';
 
 const logger = createChildLogger('reminder-worker');
 
@@ -15,11 +16,11 @@ export interface ReminderJobData {
   userId: number;
 }
 
-export function createReminderWorker(bot: Bot) {
+export function createReminderWorker(bot: Bot<BotContext>) {
   const worker = new Worker(
     'reminder',
     async (job: Job<ReminderJobData>) => {
-      const { reminderId, chatId, topicId, title, description, userId } = job.data;
+      const { reminderId, chatId, topicId, title, description } = job.data;
       
       logger.info(`Processing reminder job: ${reminderId}`);
       
@@ -103,7 +104,7 @@ function calculateNextRun(reminder: any): Date | null {
   if (!reminder.repeat) return null;
   
   const now = new Date();
-  const { freq, interval = 1, byDay, until, count } = reminder.repeat;
+  const { freq, interval = 1, until, count } = reminder.repeat;
   
   // Check if we've reached the limit
   if (until && now > until) return null;
@@ -135,7 +136,7 @@ function calculateNextRun(reminder: any): Date | null {
   return nextRun;
 }
 
-async function scheduleNextReminder(reminder: any, bot: Bot) {
+async function scheduleNextReminder(reminder: any, _bot: Bot<BotContext>) {
   // This would be implemented to schedule the next occurrence
   // For now, we'll just log it
   logger.info(`Next reminder scheduled for ${reminder.nextRun}`);

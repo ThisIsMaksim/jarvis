@@ -49,7 +49,7 @@ export const summaryTools: ToolDefinition[] = [
 export async function executeSummaryTool(
   toolName: string,
   args: any,
-  userId: number,
+  _userId: number,
   chatId: number,
   telegramTopicId: number
 ): Promise<ToolExecutionResult> {
@@ -116,7 +116,7 @@ async function getSummary(
   let summary = await Summary.findOne({
     topicId: topic._id,
     grain: validatedArgs.grain,
-    periodKey,
+    periodKey: periodKey!,
   });
   
   if (summary) {
@@ -126,16 +126,16 @@ async function getSummary(
       success: true,
       result: {
         summary: {
-          id: summary._id.toString(),
-          grain: summary.grain,
-          periodKey: summary.periodKey,
-          text: summary.text,
-          messageCount: summary.messageCount,
-          createdAt: summary.createdAt,
-          model: summary.model,
-          provider: summary.provider,
+          id: (summary as any)._id.toString(),
+          grain: (summary as any).grain,
+          periodKey: (summary as any).periodKey,
+          text: (summary as any).text,
+          messageCount: (summary as any).messageCount,
+          createdAt: (summary as any).createdAt,
+          model: (summary as any).llmModel,
+          provider: (summary as any).provider,
         },
-        message: `📊 **Саммари за ${getGrainDisplayName(validatedArgs.grain)}** (${periodKey})\n\n${summary.text}`,
+        message: `📊 **Саммари за ${getGrainDisplayName(validatedArgs.grain)}** (${periodKey})\n\n${(summary as any).text}`,
       },
     };
   }

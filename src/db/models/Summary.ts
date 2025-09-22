@@ -10,7 +10,7 @@ export interface ISummary extends Document {
   messageCount: number;
   startDate: Date;
   endDate: Date;
-  model: string;
+  llmModel: string;
   provider: string;
   metadata?: {
     tokensUsed?: number;
@@ -65,7 +65,7 @@ const summarySchema = new Schema<ISummary>({
     type: Date,
     required: true,
   },
-  model: {
+  llmModel: {
     type: String,
     required: true,
   },

@@ -113,7 +113,7 @@ async function updateChatInfo(chat: any) {
   }
 }
 
-async function updateTopicInfo(chatId: number, topicId: number, ctx: BotContext) {
+async function updateTopicInfo(chatId: number, topicId: number, _ctx: BotContext) {
   try {
     // Try to get topic info from Telegram API
     let topicTitle = `Topic ${topicId}`;

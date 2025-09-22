@@ -18,7 +18,7 @@ export interface ToolCall {
 export interface LLMResponse {
   content: string;
   tool_calls?: ToolCall[];
-  usage?: {
+  usage: {
     prompt_tokens: number;
     completion_tokens: number;
     total_tokens: number;
@@ -31,7 +31,7 @@ export interface LLMResponse {
 export interface LLMProvider {
   name: string;
   chat(messages: LLMMessage[], tools?: ToolDefinition[]): Promise<LLMResponse>;
-  transcribe(audioBuffer: Buffer, format: string): Promise<string>;
+  transcribe(audioBuffer: Uint8Array, format: string): Promise<string>;
   vision(messages: LLMMessage[]): Promise<LLMResponse>;
   isAvailable(): boolean;
 }

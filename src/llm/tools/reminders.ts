@@ -232,7 +232,7 @@ async function createReminder(
     const job = await reminderQueue.add(
       'send-reminder',
       {
-        reminderId: reminder._id.toString(),
+        reminderId: (reminder as any)._id.toString(),
         chatId,
         topicId: telegramTopicId,
         title: validatedArgs.title,
@@ -245,7 +245,7 @@ async function createReminder(
       }
     );
     
-    reminder.jobId = job.id;
+    reminder.jobId = job.id || '';
     reminder.nextRun = dueDate;
     await reminder.save();
   }
@@ -255,7 +255,7 @@ async function createReminder(
   return {
     success: true,
     result: {
-      id: reminder._id.toString(),
+      id: (reminder as any)._id.toString(),
       title: validatedArgs.title,
       due: validatedArgs.due,
       timezone: validatedArgs.timezone,
@@ -297,7 +297,7 @@ async function listReminders(args: any): Promise<ToolExecutionResult> {
   const reminders = await Reminder.find(query).sort({ dueISO: 1 });
   
   const reminderList = reminders.map(reminder => ({
-    id: reminder._id.toString(),
+    id: (reminder as any)._id.toString(),
     title: reminder.title,
     due: reminder.dueISO,
     timezone: reminder.timezone,
@@ -356,7 +356,7 @@ async function cancelReminder(args: any): Promise<ToolExecutionResult> {
   return {
     success: true,
     result: {
-      id: reminder._id.toString(),
+      id: (reminder as any)._id.toString(),
       title: reminder.title,
       message: `❌ Напоминание отменено: "${reminder.title}"`,
     },

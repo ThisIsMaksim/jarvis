@@ -92,8 +92,8 @@ export class LLMRouter {
   }
 
   async transcribe(
-    audioBuffer: Buffer, 
-    format: string, 
+    audioBuffer: Uint8Array,
+    format: string,
     providerType?: ProviderType
   ): Promise<string> {
     // For transcription, prefer OpenAI (Whisper) if available

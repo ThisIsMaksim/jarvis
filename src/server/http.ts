@@ -11,7 +11,7 @@ export async function createServer() {
   });
 
   // Health check endpoint
-  server.get('/healthz', async (request, reply) => {
+  server.get('/healthz', async (_request, reply) => {
     try {
       // Check if bot is running
       const me = await bot.api.getMe();
@@ -57,7 +57,7 @@ export async function createServer() {
   }
 
   // Root endpoint
-  server.get('/', async (request, reply) => {
+  server.get('/', async (_request, _reply) => {
     return {
       name: 'Telegram AI Bot',
       version: '1.0.0',
@@ -67,7 +67,7 @@ export async function createServer() {
   });
 
   // Error handler
-  server.setErrorHandler((error, request, reply) => {
+  server.setErrorHandler((error, _request, reply) => {
     logger.error('HTTP server error:', error);
     reply.code(500).send({
       error: 'Internal Server Error',
