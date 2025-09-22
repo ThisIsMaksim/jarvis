@@ -2,6 +2,8 @@ import { config } from '../config/env.js';
 import { createChildLogger } from '../config/logger.js';
 import { OpenAIProvider } from './providers/openai.js';
 import { GeminiProvider } from './providers/gemini.js';
+import { DeepSeekProvider } from './providers/deepseek.js';
+import { OllamaProvider } from './providers/ollama.js';
 import { LLMProvider, ProviderType, LLMMessage, LLMResponse, ToolDefinition } from './types.js';
 
 const logger = createChildLogger('llm-router');
@@ -36,6 +38,41 @@ export class LLMRouter {
       } catch (error) {
         logger.error('Failed to initialize Gemini provider:', error);
       }
+    }
+
+    // Initialize DeepSeek provider if API key is available
+    if (config.DEEPSEEK_API_KEY) {
+      try {
+        const deepseekProvider = new DeepSeekProvider(config.DEEPSEEK_API_KEY);
+        this.providers.set('deepseek', deepseekProvider);
+        logger.info('DeepSeek provider initialized');
+      } catch (error) {
+        logger.error('Failed to initialize DeepSeek provider:', error);
+      }
+    }
+
+    // Initialize Ollama provider
+    try {
+      const ollamaProvider = new OllamaProvider(
+        config.OLLAMA_BASE_URL,
+        config.OLLAMA_CHAT_MODEL,
+        config.OLLAMA_VISION_MODEL
+      );
+      this.providers.set('ollama', ollamaProvider);
+      logger.info('Ollama provider initialized');
+      
+      // Check if Ollama is actually running and models are available
+      ollamaProvider.checkHealth().then(isHealthy => {
+        if (isHealthy) {
+          logger.info('✅ Ollama health check passed');
+        } else {
+          logger.warn('⚠️ Ollama health check failed - models may not be available');
+        }
+      }).catch(error => {
+        logger.warn('Ollama health check error:', error);
+      });
+    } catch (error) {
+      logger.error('Failed to initialize Ollama provider:', error);
     }
 
     if (this.providers.size === 0) {

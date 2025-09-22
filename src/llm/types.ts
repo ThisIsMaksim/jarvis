@@ -55,4 +55,4 @@ export interface ToolExecutionResult {
   error?: string;
 }
 
-export type ProviderType = 'openai' | 'gemini';
+export type ProviderType = 'openai' | 'gemini' | 'deepseek' | 'ollama';
