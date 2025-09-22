@@ -3,6 +3,7 @@ import { createChildLogger } from '../../config/logger.js';
 import { Chat } from '../../db/models/Chat.js';
 import { Topic } from '../../db/models/Topic.js';
 import { Message } from '../../db/models/Message.js';
+import { llmRouter } from '../../index.js';
 
 const logger = createChildLogger('text-handler');
 
@@ -154,35 +155,62 @@ async function processTopicMessage(ctx: BotContext, text: string) {
       return;
     }
     
-    // For now, send a simple response
-    // In full implementation, this would go through the LLM system
-    await ctx.reply(
-      `🤖 Получил ваше сообщение в топике "${topic.title}"!\n\n` +
-      `Сообщение: "${text.substring(0, 100)}${text.length > 100 ? '...' : ''}"\n\n` +
-      `В полной версии здесь будет ответ от AI-ассистента с поддержкой:\n` +
-      `• Анализа контекста топика\n` +
-      `• Выполнения команд (напоминания, заметки)\n` +
-      `• Работы с изображениями и голосом\n` +
-      `• Генерации саммари\n\n` +
-      `Попробуйте команды: /help, /reminders, /summary`,
-      { parse_mode: 'Markdown' }
-    );
-    
-    // Save assistant response
-    const assistantMessage = new Message({
-      topicId: topic._id,
-      chatId,
-      telegramTopicId: topicId,
-      messageId: 0, // Will be updated after sending
-      userId: ctx.me.id,
-      role: 'assistant',
-      content: 'Demo response - в полной версии здесь будет ответ от LLM',
-      metadata: {
-        model: 'demo',
-        provider: 'demo',
-      },
-    });
-    await assistantMessage.save();
+    // Get AI response using LLM router
+    try {
+      // Get recent messages for context
+      const recentMessages = await Message.find({
+        topicId: topic._id
+      })
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .lean();
+      
+      // Prepare messages for LLM
+      const llmMessages = recentMessages.reverse().map(msg => ({
+        role: msg.role as 'user' | 'assistant' | 'system',
+        content: msg.content,
+      }));
+      
+      // Add system message
+      llmMessages.unshift({
+        role: 'system',
+        content: `Ты AI-ассистент в топике "${topic.title}". Отвечай полезно и по делу на русском языке.`,
+      });
+      
+      // Get AI response
+      const aiResponse = await llmRouter.chat(llmMessages);
+      
+      // Send AI response
+      const sentMessage = await ctx.reply(aiResponse.content, { parse_mode: 'Markdown' });
+      
+      // Save assistant response
+      const assistantMessage = new Message({
+        topicId: topic._id,
+        chatId,
+        telegramTopicId: topicId,
+        messageId: sentMessage.message_id,
+        userId: ctx.me.id,
+        role: 'assistant',
+        content: aiResponse.content,
+        metadata: {
+          model: aiResponse.model,
+          provider: aiResponse.provider,
+          usage: aiResponse.usage,
+          processingTime: aiResponse.processingTime,
+        },
+      });
+      await assistantMessage.save();
+      
+    } catch (error) {
+      logger.error('Error getting AI response:', error);
+      
+      // Fallback response
+      await ctx.reply(
+        '❌ Извините, произошла ошибка при обработке вашего сообщения. ' +
+        'Попробуйте еще раз или обратитесь к администратору.',
+        { parse_mode: 'Markdown' }
+      );
+    }
     
   } catch (error) {
     logger.error('Error processing topic message:', error);

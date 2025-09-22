@@ -6,16 +6,24 @@ import { startServer } from './server/http.js';
 import { createReminderWorker } from './jobs/workers/reminder.worker.js';
 import { createSummaryWorker } from './jobs/workers/summary.worker.js';
 import { bot } from './bot/bot.js';
+import { LLMRouter } from './llm/router.js';
 
 // Import handlers
 import { handleStart, handleHelp, handleModel, handleReminders, handleSummary, handleTopic } from './bot/handlers/commands.js';
 import { handleText } from './bot/handlers/text.js';
+
+// Global LLM router instance
+export let llmRouter: LLMRouter;
 
 async function main() {
   try {
     logger.info('🚀 Starting Telegram AI Bot...');
     logger.info(`Environment: ${config.NODE_ENV}`);
     logger.info(`Default provider: ${config.DEFAULT_PROVIDER}`);
+    
+    // Initialize LLM Router
+    llmRouter = new LLMRouter();
+    logger.info('✅ LLM Router initialized');
     
     // Connect to MongoDB
     await connectToMongoDB();
