@@ -24,7 +24,7 @@ const envSchema = z.object({
   OLLAMA_VISION_MODEL: z.string().default('llava:7b'),
   
   // Bot Configuration
-  DEFAULT_PROVIDER: z.enum(['openai', 'gemini', 'deepseek', 'ollama']).default('ollama'),
+  DEFAULT_PROVIDER: z.enum(['openai', 'gemini', 'deepseek', 'ollama']).default('openai'),
   DEFAULT_MODEL: z.string().default('gpt-4o-mini'),
   DEFAULT_TIMEZONE: z.string().default('Europe/Berlin'),
   
