@@ -1,11 +1,8 @@
 import OpenAI from 'openai';
-import { setGlobalDispatcher, ProxyAgent } from 'undici';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 import { config } from '../../config/env.js';
 import { createChildLogger } from '../../config/logger.js';
 import { LLMProvider, LLMMessage, LLMResponse, ToolDefinition } from '../types.js';
-
-// Настройка прокси для всех HTTP-запросов
-setGlobalDispatcher(new ProxyAgent('http://127.0.0.1:8888'));
 
 const logger = createChildLogger('openai-provider');
 
@@ -21,6 +18,7 @@ export class OpenAIProvider implements LLMProvider {
 
     this.client = new OpenAI({
       apiKey: config.OPENAI_API_KEY,
+      httpAgent: new HttpsProxyAgent('http://127.0.0.1:8888'),
     });
 
     this.defaultModel = config.DEFAULT_MODEL || 'gpt-4o-mini';
