@@ -1,7 +1,11 @@
 import OpenAI from 'openai';
+import { setGlobalDispatcher, ProxyAgent } from 'undici';
 import { config } from '../../config/env.js';
 import { createChildLogger } from '../../config/logger.js';
 import { LLMProvider, LLMMessage, LLMResponse, ToolDefinition } from '../types.js';
+
+// Настройка прокси для всех HTTP-запросов
+setGlobalDispatcher(new ProxyAgent('http://127.0.0.1:8888'));
 
 const logger = createChildLogger('openai-provider');
 
